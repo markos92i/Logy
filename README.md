@@ -68,7 +68,7 @@ enum StorLog: LogEntry {
     func lines(bodies: Bool) -> [String] {
         switch self {
         case .write(let key, let bytes, let elapsed):
-            "􀤂 write\t􀈕 \(key)\t\(bytes.byteFormatted)\t􀐫 \(elapsed.logFormatted)"
+            "􀈷 write\t􀈕 \(key)\t\(bytes.byteFormatted)\t􀐫 \(elapsed.logFormatted)"
         case .failed(let key, let detail):
             "􀇾 write\t􀈕 \(key)"
             "􀺾 \(detail)"
@@ -115,6 +115,7 @@ let (value, elapsed) = try await log.measure("write", key, on: .disk) { try awai
 
 - `label` and the result passed to `end` are always public; `detail` is private outside Debug.
 - `measure` closes the interval with `failed` when `work` throws, and rethrows the typed error.
+- `measure` runs on the caller's actor (`nonisolated(nonsending)`), so `work` may use the actor's state.
 - Each channel chooses where its intervals appear:
 
 | `LogChannel(…, signposts:)` | Where in Instruments |
@@ -150,10 +151,8 @@ The same meaning uses the same SF Symbol in every library:
 | Headers | 􁒠 |
 | Body / payload | 􁒡 |
 | Nothing | 􀓔 |
-| File | 􀈷 |
-| Credentials | 􁠱 |
-| Disk | 􀤂 |
-| Keychain | 􀎡 |
+| File, disk | 􀈷 |
+| Credentials, keychain | 􁠱 |
 
 ## License
 

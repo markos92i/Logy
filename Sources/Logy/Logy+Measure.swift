@@ -42,6 +42,8 @@ extension Logy {
     }
 
     /// Runs `work` inside an interval and returns its value with the time it took.
+    /// Runs on the caller's actor, so `work` may touch its state.
+    nonisolated(nonsending)
     public func measure<T, E: Error>(
         _ name: StaticString,
         _ label: String,

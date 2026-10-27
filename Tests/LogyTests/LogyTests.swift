@@ -118,6 +118,21 @@ struct LogyTests {
         }
     }
 
+    @Test func measureRunsOnTheCallersActor() async {
+        actor Counter {
+            let log = Logy<TestEntry>()
+            var count = 0
+            func increment() async -> Int {
+                let (value, _) = await log.measure("increment", "counter", on: .test) {
+                    count += 1
+                    return count
+                }
+                return value
+            }
+        }
+        #expect(await Counter().increment() == 1)
+    }
+
     @Test func endReturnsTheElapsedTime() {
         let log = Logy<TestEntry>()
         let interval = log.begin("work", "GET", detail: "/users/42", on: LogChannel(.test, "own", signposts: .ownCategory))
